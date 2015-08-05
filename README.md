@@ -1,8 +1,6 @@
-# DIT
+# Mentor Blog
 
-The source code for dit-rohm.com.
-
-[![wercker status](https://app.wercker.com/status/30dd7f3a9c5f19804f02a4b041e18eea/s "wercker status")](https://app.wercker.com/project/bykey/30dd7f3a9c5f19804f02a4b041e18eea)
+The source code for Mentor Blog.
 
 ## Requirements
 
@@ -15,7 +13,7 @@ The source code for dit-rohm.com.
 Clone this repository:
 
 ```
-$ git clone https://github.com/dit-rohm/dit-rohm.com
+$ git clone https://github.com/dit-rohm/mentor-blog
 ```
 
 Install dependencies listed in `Gemfile` and `bower.json`:
@@ -33,12 +31,11 @@ $ bundle exec middleman server
 
 Go to `http://localhost:4567` and you'll see the website.
 
-## Create an article
+## Generate an article template
 
-To create an article, Run the following command:
+To generate an article template, Run the following command:
 
 ```
-$ bundle exec middleman article TITLE --blog=TYPE
+$ bundle exec middleman article {YOUR TITLE} --blog=blog
 ```
 
-The `TYPE` is a type of the article (`news` or `blog`).
