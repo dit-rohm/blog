@@ -1,0 +1,25 @@
+machine:
+  ruby:
+    version: 2.2.3
+  timezone:
+    Asia/Tokyo
+
+general:
+  artifacts:
+    - "build"
+
+dependencies:
+  pre:
+    - bower install
+    - bash contrib/pngout.sh
+    - npm install -g svgo
+
+test:
+  post:
+    - echo 'No test available'
+
+deployment:
+  master:
+    branch: master
+    commands:
+      - bundle exec middleman deploy
