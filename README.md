@@ -4,7 +4,7 @@ The source code for Mentor Blog.
 
 ## Requirements
 
-- ruby 1.9.3 or later
+- ruby 2.0.0 or later
 - bundler
 - bower
 
@@ -38,4 +38,3 @@ To generate an article template, Run the following command:
 ```
 $ bundle exec middleman article {YOUR TITLE} --blog=blog
 ```
-
