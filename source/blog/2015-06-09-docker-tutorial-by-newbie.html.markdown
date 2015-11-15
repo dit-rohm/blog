@@ -15,11 +15,11 @@ tags:
 「コンテナ」という言葉がバズってからかなりの月日が経ち，
 今更感が拭えないものの[Docker](https://www.docker.com/ "Docker")に入門することにしました．
 
-![この物語は、Docker初心者の平凡な日常を淡々と描く物です。過度な期待はしないでください。](./2015-06-09/minamike.png)
+![この物語は、Docker初心者の平凡な日常を淡々と描く物です。過度な期待はしないでください。](/images/2015-06-09/minamike.png)
 
 ## Try It!
 
-[![Docker](./2015-06-09/docker.png)](https://www.docker.com/)
+[![Docker](/images/2015-06-09/docker.png)](https://www.docker.com/)
 
 物は試しに，公式サイトに用意されているオンラインチュートリアルを一通り通すことにしました．
 
@@ -37,7 +37,7 @@ Server version: 0.5.3
 Go version: go1.1
 ```
 
-[![Docker Hub](./2015-06-09/docker-hub.png)](https://hub.docker.com/)
+[![Docker Hub](/images/2015-06-09/docker-hub.png)](https://hub.docker.com/)
 
 Dockerのイメージファイルは[Docker Hub](https://hub.docker.com/)というサービスで共有することが出来ます．
 DebianやCentOSなどのディストリビューションのイメージ，MongoDBやPostgreSQLなどのミドルウェアのイメージも共有されており，

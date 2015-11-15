@@ -27,7 +27,7 @@ tags:
 
 Zoteroとは、学術論文の管理を目的としたオープンソースソフトウェアで、ジョージ・メイソン大学が開発しています。
 
-[![Zotero](./2015-05-19/zotero_top.png "Zotero")](http://zotero.org)
+[![Zotero](/images/2015-05-19/zotero_top.png "Zotero")](http://zotero.org)
 
 基本的に無料で利用できますが、一部有料サービスとなっています。
 
@@ -47,7 +47,7 @@ Zoteroにはこれらの特徴があり、特に3つ目の参考文献リスト�
 
 まず、Zoteroのダウンロードページに移動します。
 
-[![Zotero - Download](./2015-05-19/zotero_download.png "Zotero - Download")](http://zotero.org/download/)
+[![Zotero - Download](/images/2015-05-19/zotero_download.png "Zotero - Download")](http://zotero.org/download/)
 
 Firefox版であれば、左の「Zotero for Firefox」をインストールするだけです。
 
@@ -62,7 +62,7 @@ Zotero Standaloneとブラウザの拡張機能がインストールされてい
 
 ブラウザから適当な論文ページにアクセスしてみましょう。すると、ブラウザのアドレスバー内になにやらアイコンが表示されているかと思います。
 
-[![Zotero - Address Bar](./2015-05-19/zotero_in_bar.png "アドレスバーのZotero")](./2015-05-19/zotero_in_bar.png)
+[![Zotero - Address Bar](/images/2015-05-19/zotero_in_bar.png "アドレスバーのZotero")](/images/2015-05-19/zotero_in_bar.png)
 
 それをクリックするだけで、Zotero Standaloneに論文情報がストックされます。
 
@@ -72,13 +72,13 @@ ZoteroはCiNiiなどの論文データベースのほか、ウェブページを
 
 Zotero Standaloneで適当な論文を右クリックすると「選択されたアイテムから参考文献目録を作成」という項目があります。
 
-[![Zotero - Submenu](./2015-05-19/zotero_submenu.png "Zotero - Submenu")](./2015-05-19/zotero_submenu.png)
+[![Zotero - Submenu](/images/2015-05-19/zotero_submenu.png "Zotero - Submenu")](/images/2015-05-19/zotero_submenu.png)
 
 クリックすると「引用スタイル」や「出力形式」が選択できますので、それぞれ選びます。
 
 RTF, HTMLを選んだ場合はその形式のファイルが保存され、クリップボードにコピーを選択した場合はそのまま貼り付けることができます。
 
-[![Zotero - List](./2015-05-19/zotero_list.png "Zotero - List")](./2015-05-19/zotero_list.png)
+[![Zotero - List](/images/2015-05-19/zotero_list.png "Zotero - List")](/images/2015-05-19/zotero_list.png)
 
 ## まとめ
 
