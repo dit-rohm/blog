@@ -31,7 +31,7 @@ homebrew-cask:`brew install caskroom/cask/brew-cask`
 ダウンロードは<a href="https://www.iterm2.com/" target="_blank">こちら</a>  
 コマンドはこちら`brew cask install iterm2`
 
-![iterm2](./2015-07-22/01.png)
+![iterm2](/images/2015-07-22/01.png)
 
 ##TotalSpaces
 このアプリはデスクトップの切り替えを直感的にしてくれます。
@@ -41,7 +41,7 @@ homebrew-cask:`brew install caskroom/cask/brew-cask`
 ダウンロードは<a href="http://totalspaces.binaryage.com/" target="_blank">こちら</a>  
 コマンドはこちら`brew cask install totalspaces`
 
-![ts](./2015-07-22/02.png)
+![ts](/images/2015-07-22/02.png)
 
 ##Shift It
 Windowsでいう`Win key + 矢印`です。
@@ -50,7 +50,7 @@ Windowsでは画面の分割をスムーズにできていたのに、と思っ�
 ダウンロードは<a href="https://code.google.com/p/shiftit/" target="_blank">こちら</a>  
 コマンドはこちら`brew cask install shiftit`
 
-![si](./2015-07-22/03.png)
+![si](/images/2015-07-22/03.png)
 
 ##ImageMagick
 画像の変換がしたい、と思ったときにはこれです。
@@ -69,7 +69,7 @@ homebrewからインストールしてあげてください。
 ダウンロードは<a href="http://kobito.qiita.com/" target="_blank">こちら</a>  
 コマンドはこちら`brew cask install kobito`
 
-![kobito](./2015-07-22/05.png)
+![kobito](/images/2015-07-22/05.png)
 
 ##Locamatic
 学校にくるとプロキシの設定とか色々面倒ですよね。
@@ -98,7 +98,7 @@ homebrewからインストールしてあげてください。
 ダウンロードは<a href="http://sunsky3s.s41.xrea.com/shupapan/" target="_blank">こちら</a>  
 コマンドはこちら`brew cask install shupapan`
 
-![sp](./2015-07-22/09.png)
+![sp](/images/2015-07-22/09.png)
 
 ##AppCleaner
 ここまで色々なアプリを紹介してきましたが、結局自分の好みなどもあると思うので、どんなもんかと入れてみたアプリを使わないなーと思ったらこのアプリでアンインストールしてください。
@@ -107,7 +107,7 @@ homebrewからインストールしてあげてください。
 ダウンロードは<a href="http://www.freemacsoft.net/appcleaner/" target="_blank">こちら</a>  
 コマンドはこちら`brew cask install appcleaner`
 
-![ac](./2015-07-22/10.png)
+![ac](/images/2015-07-22/10.png)
 
 ***
 
