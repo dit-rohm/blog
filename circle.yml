@@ -22,4 +22,4 @@ deployment:
   master:
     branch: master
     commands:
-      - bundle exec middleman deploy
+      - bash contrib/deploy.sh

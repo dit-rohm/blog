@@ -101,11 +101,9 @@ set :markdown, :fenced_code_blocks => true, :smartypants => true, :tables => tru
 activate :syntax
 
 activate :deploy do |deploy|
-  deploy.method   = :ftp
-  deploy.host     = ENV['FTP_HOST']
-  deploy.path     = ENV['FTP_HOME']
-  deploy.user     = ENV['FTP_USER']
-  deploy.password = ENV['FTP_PASSWORD']
+  deploy.method   = :git
+  deploy.branch   = 'gh-pages'
+  deploy.strategy = :force_push
 end
 
 configure :development do
