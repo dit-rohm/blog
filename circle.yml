@@ -14,8 +14,6 @@ general:
 dependencies:
   pre:
     - bower install
-    - bash contrib/pngout.sh
-    - npm install -g svgo
 
 test:
   post:
