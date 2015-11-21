@@ -4,7 +4,7 @@ title: バイリンガルニュースのおすすめ回6選
 date: 2015-08-06 21:13 JST
 author: けいちゃん
 description: バイリンガルニュースのおすすめのエピソードを紹介します。
-eyecatch: https://dit-rohm.com/blog/2015-08-06/bn.png
+eyecatch: https://blog.dit-rohm.com/images/2015-08-06/bn.png
 tags:
 ---
 
