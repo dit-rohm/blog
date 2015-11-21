@@ -3,6 +3,8 @@ layout: article_layout
 title: 知っておくべき知的財産権　著作権
 date: 2015-08-13
 author: いいのっく
+description: 知的財産権について。
+eyecatch: https://blog.dit-rohm.com/images/2015-08-13/court.jpg
 tags:
 ---
 
@@ -153,4 +155,3 @@ WEBサイト制作においては、1，8，9辺りが該当することが多�
 
 今回は著作物について書いてきましたが、知的財産権に含まれる法律は他にもたくさん存在しています。
 これを機に少しでも気にしてもらえるようになればいいなー、と個人的に思います。
-
