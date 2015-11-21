@@ -4,7 +4,7 @@ title: ディープラーニングで講義のレポートを自動執筆
 date: 2015-11-17 17:43 JST
 author: きよまる
 description: 機械学習でもうひとりの僕を作ります
-eyecatch: https://dit-rohm.com/images/2015-11-17/eyecatch.png
+eyecatch: https://blog.dit-rohm.com/images/2015-11-17/eyecatch.png
 tags:
 ---
 
