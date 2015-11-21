@@ -2,10 +2,10 @@
 layout: article_layout
 title: 通学中の暇つぶしにおすすめなこと15選
 date: 2015-07-28 10:00 JST
-author: ちい 
+author: ちい
 description: 電車通学中って暇ですよね。そんな時に簡単にできるおすすめなことを紹介します。
 keywords: 通学, 暇つぶし
-eyecatch: https://dit-rohm.com/blog/2015-07-28/eyecatch.jpg
+eyecatch: https://blog.dit-rohm.com/images/2015-07-28/eyecatch.jpg
 tags:
 ---
 
@@ -45,13 +45,13 @@ Mami&Michaelがバイリンガル会話形式でニュースを紹介してい�
 ### [comico](http://www.comico.jp/)
 タテ読み！タダ読み！でお馴染みの、毎日更新のオリジナル作品が無料で読める、コミック＆ノベルサービス。完全無料でフルカラー、公式作品 (comico公式作家による漫画)とチャレンジ作品（一般の方によって投稿された漫画）を合わせると作品数が凄く多い。このアプリには本当にお世話になっています。
 
-#### おすすめ公式3作品 
+#### おすすめ公式3作品
 
  * **[パステル家族](http://www.comico.jp/articleList.nhn?titleNo=32)**：主人公のマヨちゃんとその家族、友達達が繰りなすほのぼのコメディ。
  * **[ネト充のススメ](http://www.comico.jp/articleList.nhn?titleNo=27)**：恋愛要素が強い、かわいい！ネトゲやったことないけど楽しそう。
  * **[ミイラの飼い方](http://www.comico.jp/articleList.nhn?titleNo=3410)**：ミイラのミーくんが本当にかわいくって癒されます。
 
-#### おすすめベストチャレンジ3作品 
+#### おすすめベストチャレンジ3作品
 
  * **[2LDK](http://www.comico.jp/challenge/articleList.nhn?titleNo=6609)**：どこにでもいる普通のカップルとシロクマのシロのお話。更新頻度高め！ほのぼのしててめっちゃかわいい。
  * **[Devinette](http://www.comico.jp/challenge/articleList.nhn?titleNo=3176)**：幼馴染み以上恋人未満の二人による、クイズを交えた、なかなか素直になれない恋愛模様。クイズが良い味出してる！
@@ -65,7 +65,7 @@ Mami&Michaelがバイリンガル会話形式でニュースを紹介してい�
  * **[オレンジ・マーマレード](https://manga.line.me/webtoons/periodic?id=414852)**：主人公はバンパイア。ちょっぴり切ない恋物語。完結してます。
  * **[チーズ・イン・ザ・トラップ](https://manga.line.me/webtoons/periodic?id=414813)**：平凡な女子大生と謎だらけの先輩。 微妙な関係の彼らが繰り広げる物語。登場するキャラにかなりイライラしちゃうけどおもしろくて読んでしまう。
  * **[ドキドキズキズキ](https://manga.line.me/webtoons/periodic?id=414874)**：一応ラブストーリー。色々辛すぎて本当にドキドキズキズキするお話。
-	
+
 ### [マンガボックス](https://www.mangabox.me/)
 こちらも漫画アプリ。私はマンガボックスには読みたい漫画がないので、[マンガボックスインディーズ](https://www-indies.mangabox.me/)に投稿されているマンガを読んでいます。一般の方によって投稿された漫画です。
 

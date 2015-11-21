@@ -5,7 +5,7 @@ date: 2015-06-09 21:00 JST
 author: くにちゃん
 description: 初心者がDockerに入門してみた話．
 keywords: Docker,Linux
-eyecatch: https://dit-rohm.com/blog/2015-06-09/docker.png
+eyecatch: https://blog.dit-rohm.com/images/2015-06-09/docker.png
 tags:
 ---
 
