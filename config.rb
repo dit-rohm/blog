@@ -114,7 +114,7 @@ end
 
 configure :build do
   activate :google_analytics do |ga|
-    ga.tracking_id = 'UA-61361620-1'
+    ga.tracking_id = 'UA-61361620-3'
   end
 
   activate :minify_css
