@@ -100,6 +100,8 @@ set :markdown, :fenced_code_blocks => true, :smartypants => true, :tables => tru
 
 activate :syntax
 
+activate :sitemap, :hostname => "https://blog.dit-rohm.com"
+
 activate :deploy do |deploy|
   deploy.method   = :git
   deploy.branch   = 'gh-pages'
