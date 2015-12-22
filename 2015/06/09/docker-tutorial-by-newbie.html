@@ -1,0 +1,131 @@
+<!DOCTYPE html> <html lang=ja> <head> <meta charset=utf-8> <meta http-equiv=X-UA-Compatible content='IE=edge'> <meta name=viewport content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"> <title>初心者がDockerに入門してみた - DIT Mentor Blog</title> <meta name=keywords content="Docker,Linux"> <meta name=description content="初心者がDockerに入門してみた話．"> <meta property="og:site_name" content="DIT Mentor Blog"> <meta property="og:title" content="初心者がDockerに入門してみた"> <meta property="og:description" content="初心者がDockerに入門してみた話．"> <meta property="og:type" content=article> <meta property="og:url" content="https://blog.dit-rohm.com/2015/06/09/docker-tutorial-by-newbie.html"> <meta property="og:image" content="https://blog.dit-rohm.com/images/2015-06-09/docker.png"> <meta property="fb:app_id" content=866054163477643> <meta name="twitter:card" content=summary_large_image> <meta name="twitter:site" content="@dit_rohm"> <link href="/images/favicon.png" rel=icon type="image/png"/> <link rel=alternate type="application/atom+xml" title="Atom Feed" href="/feed.xml"/> <link href="/stylesheets/blog.css" rel=stylesheet /> <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-61361620-3', 'auto');
+  ga('send', 'pageview');
+</script> </head> <body> <header class=blog_header> <nav class="navbar navbar-default navbar-fixed-top"> <div class=container-fluid> <div class=navbar-header> <button type=button class=navbar-toggle data-toggle=collapse data-target="#bs-example-navbar-collapse-1"> <span class=sr-only>Toggle navigation</span> <span class=icon-bar></span> <span class=icon-bar></span> <span class=icon-bar></span> </button> <a class=navbar-brand href="https://dit-rohm.com/">DIT</a> </div> <div class="collapse navbar-collapse" id=bs-example-navbar-collapse-1> <ul class="nav navbar-nav"> <li class=active><a href="/">Blog Home</a></li> <li class=dropdown> <a href="#" class=dropdown-toggle data-toggle=dropdown>Tags <b class=caret></b></a> <ul class=dropdown-menu> <li> <a href="/tags/Debian.html">Debian</a> </li> <li> <a href="/tags/Linux.html">Linux</a> </li> <li> <a href="/tags/VPS.html">VPS</a> </li> <li> <a href="/tags/アプリ.html">アプリ</a> </li> <li> <a href="/tags/カメラ.html">カメラ</a> </li> <li> <a href="/tags/音楽.html">音楽</a> </li> </ul> </li> <li class=dropdown> <a href="#" class=dropdown-toggle data-toggle=dropdown>Archives <b class=caret></b></a> <ul class=dropdown-menu role=menu> <li role=presentation class=dropdown-header>2015年</li> <li><a href="/2015/11.html">11月</a></li> <li><a href="/2015/08.html">08月</a></li> <li><a href="/2015/07.html">07月</a></li> <li><a href="/2015/06.html">06月</a></li> <li><a href="/2015/05.html">05月</a></li> </ul> </li> </ul> </div> </div> </nav> <div class="jumbotron top-catch"> <h1 class=midashi-en><a href="/">DIT Mentor Blog</a></h1> <hr class=header-hr> <h5 class=midashi-ja>DITメンターブログ</h5> </div> </header> <div id=main role=main> <div class=container> <div class=row> <div class=col-sm-1> </div> <div class=col-sm-2> <p class=tags>Tags</p> </div> <div class="col-sm-7 post"> <h1 class=article-title>初心者がDockerに入門してみた</h1> <p class=article-date>2015/06/09</p> <hr> <h1>初心者がDockerに入門してみた</h1> <p>こんにちは，DITメンターのくにちゃんです． 「コンテナ」という言葉がバズってからかなりの月日が経ち， 今更感が拭えないものの<a title=Docker href="https://www.docker.com/">Docker</a>に入門することにしました．</p> <p><img alt="この物語は、Docker初心者の平凡な日常を淡々と描く物です。過度な期待はしないでください。" src="/images/2015-06-09/minamike.png"/></p> <h2>Try It!</h2> <p><a href="https://www.docker.com/"><img alt=Docker src="/images/2015-06-09/docker.png"/></a></p> <p>物は試しに，公式サイトに用意されているオンラインチュートリアルを一通り通すことにしました．</p> <p>ちなみにDockerはGo言語で書かれています． バージョン表示からもGo言語が使用されていることをうかがい知ることが出来ます． なお，執筆時の最新バージョンはDockerが1.6.2，Goが1.4.2です．</p> <pre class="highlight shell"><code><span class="gp">you@tutorial:~$ </span>docker version
+Docker Emulator version 0.1.3
+
+Emulating:
+Client version: 0.5.3
+Server version: 0.5.3
+Go version: go1.1
+</code></pre> <p><a href="https://hub.docker.com/"><img alt="Docker Hub" src="/images/2015-06-09/docker-hub.png"/></a></p> <p>Dockerのイメージファイルは<a href="https://hub.docker.com/">Docker Hub</a>というサービスで共有することが出来ます． DebianやCentOSなどのディストリビューションのイメージ，MongoDBやPostgreSQLなどのミドルウェアのイメージも共有されており， ウェブブラウザもしくは<code>docker search</code>でイメージを検索することが出来ます． GitHubライクにコンテナイメージを共有することが出来て便利ですね．</p> <pre class="highlight shell"><code><span class="gp">you@tutorial:~$ </span>docker search tutorial
+Found 1 results matching your query <span class="o">(</span><span class="s2">"tutorial"</span><span class="o">)</span>
+NAME                      DESCRIPTION
+learn/tutorial            An image <span class="k">for </span>the interactive tutorial
+</code></pre> <p><code>docker pull</code>でDocker Hubにpushされたイメージをローカルに取得することが出来ます．</p> <pre class="highlight shell"><code><span class="gp">you@tutorial:~$ </span>docker pull learn/tutorial
+Pulling repository learn/tutorial from https://index.docker.io/v1
+Pulling image 8dbd9e392a964056420e5d58ca5cc376ef18e2de93b5cc90e868a1bbc8318c1c <span class="o">(</span>precise<span class="o">)</span> from ubuntu
+Pulling image b750fe79269d2ec9a3c593ef05b4332b1d1a02a62b4accb2c21d589ff2f5f2dc <span class="o">(</span>12.10<span class="o">)</span> from ubuntu
+Pulling image 27cf784147099545 <span class="o">()</span> from tutorial
+</code></pre> <p><code>docker run</code>を使用することで<code>docker pull</code>したイメージからコンテナを生成，コンテナ内でコマンドを実行することが出来ます． 名言を表示させてみましょう．</p> <pre class="highlight shell"><code><span class="gp">you@tutorial:~$ </span>docker run learn/tutorial <span class="nb">echo</span> <span class="s2">"金は命より重い そこの認識をごまかす輩は生涯地を這う"</span>
+金は命より重い そこの認識をごまかす輩は生涯地を這う
+</code></pre> <p>さて，次に<code>apt-get install -y ping</code>を実行してpingを使用できるようにします． どうやらこのコンテナのbase imageはDebian系のディストリビューションのようです．</p> <pre class="highlight shell"><code><span class="gp">you@tutorial:~$ </span>docker run learn/tutorial apt-get install -y ping
+Reading package lists...
+Building dependency tree...
+The following NEW packages will be installed:
+  iputils-ping
+0 upgraded, 1 newly installed, 0 to remove and 0 not upgraded.
+Need to get 56.1 kB of archives.
+After this operation, 143 kB of additional disk space will be used.
+Get:1 http://archive.ubuntu.com/ubuntu/ precise/main iputils-ping amd64 3:20101006-1ubuntu1 <span class="o">[</span>56.1 kB]
+debconf: delaying package configuration, since apt-utils is not installed
+Fetched 56.1 kB <span class="k">in </span>1s <span class="o">(</span>50.3 kB/s<span class="o">)</span>
+Selecting previously unselected package iputils-ping.
+<span class="o">(</span>Reading database ... 7545 files and directories currently installed.<span class="o">)</span>
+Unpacking iputils-ping <span class="o">(</span>from .../iputils-ping_3%3a20101006-1ubuntu1_amd64.deb<span class="o">)</span> ...
+Setting up iputils-ping <span class="o">(</span>3:20101006-1ubuntu1<span class="o">)</span> ...
+</code></pre> <p><code>docker ps -l</code>を使用することで生成されたコンテナの一覧を得ることが出来ます．</p> <pre class="highlight shell"><code><span class="gp">you@tutorial:~$ </span>docker ps -l
+ID                  IMAGE               COMMAND                CREATED             STATUS              PORTS
+6982a9948422        ubuntu:12.04        apt-get install ping   1 minute ago        Exit 0
+</code></pre> <p>コンテナ内のデータはcommitするか，外部に保存するかしない限り永続化されません． ホストのディレクトリもしくはファイルをコンテナ内にマウントしたり，データ格納専用のコンテナを用意してコンテナ内にマウントすることも出来ます．</p> <p>今回は<code>docker commit</code>して<code>apt-get install -y ping</code>で加えられた変更を永続化しましょう．</p> <pre class="highlight shell"><code><span class="gp">you@tutorial:~$ </span>docker commit 698 learn/ping
+effb66b31edb
+</code></pre> <p>先にインストールしたpingコマンドを使用してwww.google.comにpingをうってみます．</p> <pre class="highlight shell"><code><span class="gp">you@tutorial:~$ </span>docker run learn/ping ping www.google.com
+PING www.google.com <span class="o">(</span>74.125.239.129<span class="o">)</span> 56<span class="o">(</span>84<span class="o">)</span> bytes of data.
+64 bytes from nuq05s02-in-f20.1e100.net <span class="o">(</span>74.125.239.148<span class="o">)</span>: <span class="nv">icmp_req</span><span class="o">=</span>1 <span class="nv">ttl</span><span class="o">=</span>55 <span class="nb">time</span><span class="o">=</span>2.23 ms
+64 bytes from nuq05s02-in-f20.1e100.net <span class="o">(</span>74.125.239.148<span class="o">)</span>: <span class="nv">icmp_req</span><span class="o">=</span>2 <span class="nv">ttl</span><span class="o">=</span>55 <span class="nb">time</span><span class="o">=</span>2.30 ms
+64 bytes from nuq05s02-in-f20.1e100.net <span class="o">(</span>74.125.239.148<span class="o">)</span>: <span class="nv">icmp_req</span><span class="o">=</span>3 <span class="nv">ttl</span><span class="o">=</span>55 <span class="nb">time</span><span class="o">=</span>2.27 ms
+64 bytes from nuq05s02-in-f20.1e100.net <span class="o">(</span>74.125.239.148<span class="o">)</span>: <span class="nv">icmp_req</span><span class="o">=</span>4 <span class="nv">ttl</span><span class="o">=</span>55 <span class="nb">time</span><span class="o">=</span>2.30 ms
+64 bytes from nuq05s02-in-f20.1e100.net <span class="o">(</span>74.125.239.148<span class="o">)</span>: <span class="nv">icmp_req</span><span class="o">=</span>5 <span class="nv">ttl</span><span class="o">=</span>55 <span class="nb">time</span><span class="o">=</span>2.25 ms
+64 bytes from nuq05s02-in-f20.1e100.net <span class="o">(</span>74.125.239.148<span class="o">)</span>: <span class="nv">icmp_req</span><span class="o">=</span>6 <span class="nv">ttl</span><span class="o">=</span>55 <span class="nb">time</span><span class="o">=</span>2.29 ms
+64 bytes from nuq05s02-in-f20.1e100.net <span class="o">(</span>74.125.239.148<span class="o">)</span>: <span class="nv">icmp_req</span><span class="o">=</span>7 <span class="nv">ttl</span><span class="o">=</span>55 <span class="nb">time</span><span class="o">=</span>2.23 ms
+64 bytes from nuq05s02-in-f20.1e100.net <span class="o">(</span>74.125.239.148<span class="o">)</span>: <span class="nv">icmp_req</span><span class="o">=</span>8 <span class="nv">ttl</span><span class="o">=</span>55 <span class="nb">time</span><span class="o">=</span>2.30 ms
+64 bytes from nuq05s02-in-f20.1e100.net <span class="o">(</span>74.125.239.148<span class="o">)</span>: <span class="nv">icmp_req</span><span class="o">=</span>9 <span class="nv">ttl</span><span class="o">=</span>55 <span class="nb">time</span><span class="o">=</span>2.35 ms
+<span class="gp">-&gt; </span>This would normally just keep going. However, this emulator does not support Ctrl-C, so we quit here.
+</code></pre> <p>最後にDocker Hubへイメージをpushします．</p> <pre class="highlight shell"><code><span class="gp">you@tutorial:~$ </span>docker push learn/ping
+The push refers to a repository <span class="o">[</span>learn/ping] <span class="o">(</span>len: 1<span class="o">)</span>
+Processing checksums
+Sending image list
+Pushing repository learn/ping <span class="o">(</span>1 tags<span class="o">)</span>
+Pushing 8dbd9e392a964056420e5d58ca5cc376ef18e2de93b5cc90e868a1bbc8318c1c
+Image 8dbd9e392a964056420e5d58ca5cc376ef18e2de93b5cc90e868a1bbc8318c1c already pushed, skipping
+Pushing tags <span class="k">for </span>rev <span class="o">[</span>8dbd9e392a964056420e5d58ca5cc376ef18e2de93b5cc90e868a1bbc8318c1c] on <span class="o">{</span>https://registry-1.docker.io/v1/repositories/learn/ping/tags/latest<span class="o">}</span>
+Pushing a1dbb48ce764c6651f5af98b46ed052a5f751233d731b645a6c57f91a4cb7158
+Pushing  11.5 MB/11.5 MB <span class="o">(</span>100%<span class="o">)</span>
+Pushing tags <span class="k">for </span>rev <span class="o">[</span>a1dbb48ce764c6651f5af98b46ed052a5f751233d731b645a6c57f91a4cb7158] on <span class="o">{</span>https://registry-1.docker.io/v1/repositories/learn/ping/tags/latest<span class="o">}</span>
+</code></pre> <h2>Dockerfile</h2> <p>Dockerfileというテキストファイルに操作を記述することで，Dockerにイメージを自動的に生成させることが出来ます． 本節で使用する命令は以下の通りです．</p> <ul> <li>FROM：base imageを指定</li> <li>MAINTAINER：コンテナのAuthorフィールドに格納される値を指定</li> <li>RUN：docker buildで実行するコマンドを指定</li> <li>WORKDIR：作業ディレクトリを変更</li> <li>ENTRYPOINT：コンテナがdocker runされた時に実行するコマンドを指定</li> </ul> <p>それでは，dit-rohm.comのリポジトリをcloneして，実行環境を整えた状態のイメージを生成するDockerfileを作成してみましょう． base imageにはdebian:jessieを採用します．</p> <pre class="highlight shell"><code><span class="gp">$ </span>cat Dockerfile
+FROM debian:jessie
+
+MAINTAINER Draco Malfoy, draco@malfoyfoy.me
+
+RUN <span class="nb">echo</span> <span class="s2">"deb http://ftp.jp.debian.org/debian jessie main contrib non-free"</span> &gt; /etc/apt/sources.list
+RUN apt-get update <span class="o">&amp;&amp;</span> apt-get upgrade -y <span class="o">&amp;&amp;</span> apt-get clean
+
+RUN apt-get install -y git ruby ruby-dev nodejs nodejs-legacy npm <span class="o">&amp;&amp;</span> apt-get clean <span class="o">&amp;&amp;</span> rm -rf /var/lib/apt/lists/<span class="k">*</span>
+
+RUN gem install bundler
+RUN npm -g install bower
+
+RUN git clone https://github.com/dit-rohm/dit-rohm.com.git
+WORKDIR dit-rohm.com
+RUN bundle install --path vendor/bundle
+RUN bower install --config.interactive<span class="o">=</span><span class="nb">false</span> --allow-root
+
+ENTRYPOINT bundle <span class="nb">exec </span>middleman server
+</code></pre> <p>次にイメージのbuildを行います． Dockerfileに書いたコマンドが一行毎に実行されていることが分かります．</p> <pre class="highlight shell"><code><span class="gp">$ </span>docker build .
+Sending build context to Docker daemon  2.56 kB
+Sending build context to Docker daemon
+Step 0 : FROM debian:jessie
+ ---&gt; df2a0347c9d0
+Step 1 : MAINTAINER Draco Malfoy, draco@malfoyfoy.me
+ ---&gt; Using cache
+ ---&gt; e2c54581b168
+Step 2 : RUN <span class="nb">echo</span> <span class="s2">"deb http://ftp.jp.debian.org/debian jessie main contrib non-free"</span> &gt; /etc/apt/sources.list
+ ---&gt; Using cache
+ ---&gt; 8f6ee7fde25c
+Step 3 : RUN apt-get update <span class="o">&amp;&amp;</span> apt-get upgrade -y <span class="o">&amp;&amp;</span> apt-get clean
+ ---&gt; Using cache
+ ---&gt; 272c1f51a5d4
+Step 4 : RUN apt-get install -y git ruby ruby-dev nodejs nodejs-legacy npm <span class="o">&amp;&amp;</span> apt-get clean <span class="o">&amp;&amp;</span> rm -rf /var/lib/apt/lists/<span class="k">*</span>
+ ---&gt; Using cache
+ ---&gt; 6fe07ad84795
+Step 5 : RUN gem install bundler
+ ---&gt; Using cache
+ ---&gt; 7f27a0c57c93
+Step 6 : RUN npm -g install bower
+ ---&gt; Using cache
+ ---&gt; c9412562d3a6
+Step 7 : RUN git clone https://github.com/dit-rohm/dit-rohm.com.git
+ ---&gt; Using cache
+ ---&gt; 6ffc01e222ea
+Step 8 : WORKDIR dit-rohm.com
+ ---&gt; Using cache
+ ---&gt; de0f8ce67d15
+Step 9 : RUN bundle install --path vendor/bundle
+ ---&gt; Using cache
+ ---&gt; 904d0a7152f6
+Step 10 : RUN bower install --config.interactive<span class="o">=</span><span class="nb">false</span> --allow-root
+ ---&gt; Using cache
+ ---&gt; fe135566cbdf
+Step 11 : ENTRYPOINT bundle <span class="nb">exec </span>middleman server
+ ---&gt; Using cache
+ ---&gt; 88076cc521f4
+Successfully built 88076cc521f4
+</code></pre> <p>上記の出力例では事前に<code>docker build .</code>していたので，キャッシュを使用してイメージがビルドされました．</p> <p>次に生成されたイメージからコンテナを生成してバックグラウンドで実行します． &ndash;net hostを指定することでコンテナ内のプロセスからホストのネットワークスタックを利用出るようにしています．また，-dを指定することでコンテナをバックグラウンドで実行します．</p> <pre class="highlight shell"><code><span class="gp">$ </span>docker run --net host -d 88076cc521f4
+f7c62ed6a238d71fadd02dc8c63e77f234e55c44305c335275aebec325e75c21
+</code></pre> <p>最後にcURLで疎通確認を行います． 以下の出力例では<code>&lt;title&gt;</code>タグのある行のみを抽出して表示されました． 少なくともトップページのHTMLが出力されることを確認できました．</p> <pre class="highlight shell"><code><span class="gp">$ </span>curl -s http://localhost:4567/ | grep <span class="s1">'&lt;title&gt;'</span>
+  &lt;title&gt;DIT&lt;/title&gt;
+</code></pre> <p>以上がDockerfileからDockerコンテナのイメージをビルドするまでの流れになります．</p> <h2>参考文献</h2> <ul> <li><a href="https://www.docker.com/tryit/">Online Tutorial - Try It! | Docker</a></li> <li><a href="http://www.atmarkit.co.jp/ait/articles/1405/16/news032.html">いまさら聞けないDocker入門（1）：アプリ開発者もインフラ管理者も知っておきたいDockerの基礎知識 - ＠IT</a></li> <li><a href="http://qiita.com/hidekuro/items/fc12344d36d996198e96">VagrantとDockerについて名前しか知らなかったので試した - Qiita</a></li> <li><a href="http://deeeet.com/writing/2014/05/11/docker-host-networking/">DockerのHost networking機能 | SOTA</a></li> <li><a href="http://docs.docker.com/reference/builder/">Dockerfile - Docker Documentation</a></li> </ul> </div> <div class=col-sm-2> </div> </div> </div> </div> <div class="social-buttons clearfix"> <ul> <li> <a href="https://twitter.com/share" class=twitter-share-button data-url="https://blog.dit-rohm.com/2015/06/09/docker-tutorial-by-newbie.html" data-via=dit_rohm data-related=dit_rohm>Tweet</a> </li> <li> <div class=fb-share-button data-href="https://blog.dit-rohm.com/2015/06/09/docker-tutorial-by-newbie.html" data-layout=button_count></div> </li> <li> <a data-pocket-label=pocket data-pocket-count=horizontal class=pocket-btn data-lang=en></a> </li> <li> <a href="https://b.hatena.ne.jp/entry/https://blog.dit-rohm.com/2015/06/09/docker-tutorial-by-newbie.html" class=hatena-bookmark-button data-hatena-bookmark-title="初心者がDockerに入門してみた - dit" data-hatena-bookmark-layout=standard-balloon data-hatena-bookmark-lang=ja title="このエントリーをはてなブックマークに追加"> <img src="https://b.st-hatena.com/images/entry-button/button-only.png" alt="このエントリーをはてなブックマークに追加" width=20 height=20 style="border: none;"/></a> </li> </ul> </div> <footer class=blog_footer> <div class="inner container"> <div class=row> <div class="col-md-4 col-sm-6 footer-content"> <h3>Recent Post</h3> <ul> <li><p class=post-date><time datetime="2015-11-17T17:43">2015/11/17</time></p> <p class=post-title><a href="/2015/11/17/recurrent-neural-network.html">ディープラーニングで講義のレポートを自動執筆</a></p></li> </ul> <ul> <li><p class=post-date><time datetime="2015-11-10T21:00">2015/11/10</time></p> <p class=post-title><a href="/2015/11/10/hackathon.html">初心者がハッカソンに参加してみた結果</a></p></li> </ul> <ul> <li><p class=post-date><time datetime="2015-08-13T00:00">2015/08/13</time></p> <p class=post-title><a href="/2015/08/13/IP.html">知っておくべき知的財産権　著作権</a></p></li> </ul> <ul> <li><p class=post-date><time datetime="2015-08-06T21:13">2015/08/06</time></p> <p class=post-title><a href="/2015/08/06/bilingual-news.html">バイリンガルニュースのおすすめ回6選</a></p></li> </ul> <ul> <li><p class=post-date><time datetime="2015-07-28T10:00">2015/07/28</time></p> <p class=post-title><a href="/2015/07/28/on-the-train.html">通学中の暇つぶしにおすすめなこと15選</a></p></li> </ul> </div> <div class="col-md-4 col-sm-6 footer-content"> <h3>About Author</h3> <p class=about-auther>DIT（Doshisha Institute of Technology）は、技術力向上を目的とし同志社／同志社女子大学の学生向けに勉強会やハッカソンを開催する<a href="http://rohm.doshisha.ac.jp/" target=_blank>ローム記念館プロジェクト</a>です。</p> <p class=about-auther>このブログではDITのお知らせ、活動報告のほかに開発、プログラミング等についても書いていきます。</p> <div class=sns-link> <h4>- SNS</h4> <a href="https://twitter.com/dit_rohm/" target=_blank><img src="/images/twitter_logo.png" alt=Twitter></a> <a href="https://facebook.com/dit_rohm/" target=_blank><img src="/images/fb_logo.png" alt=Facebook></a> </div> </div> <div class="col-md-4 col-sm-6 footer-content"> <h3>DIT Website</h3> <p class=about-auther>DITのウェブサイトです。DITについてや参加申し込み、FAQなどはこちらのサイトをご覧ください。</p> <ul> <li><p class=dit-link><a href="https://dit-rohm.com/">HOME</a></p></li> <li><p class=dit-link><a href="https://dit-rohm.com/about.html">ABOUT</a></p></li> <li><p class=dit-link><a href="https://dit-rohm.com/faq.html">FAQ</a></p></li> </ul> </div> </div> <p class=copyright><small>&copy; DIT 2015</small></p> </div> </footer> <script src="/javascripts/all.js"></script> </body> </html>

@@ -1,0 +1,666 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>DIT Mentor Blog</title>
+  <subtitle>DITメンターブログ</subtitle>
+  <id>https://blog.dit-rohm.com/</id>
+  <link href="https://blog.dit-rohm.com/"/>
+  <link href="https://blog.dit-rohm.com/feed.xml" rel="self"/>
+  <updated>2015-11-17T17:43:00+09:00</updated>
+  <author>
+    <name>DIT（Doshisha Institute of Technology）</name>
+  </author>
+  <entry>
+    <title>ディープラーニングで講義のレポートを自動執筆</title>
+    <link rel="alternate" href="https://blog.dit-rohm.com/2015/11/17/recurrent-neural-network.html"/>
+    <id>https://blog.dit-rohm.com/2015/11/17/recurrent-neural-network.html</id>
+    <published>2015-11-17T17:43:00+09:00</published>
+    <updated>2015-12-22T18:45:34+09:00</updated>
+    <author>
+      <name>きよまる</name>
+    </author>
+    <summary type="html">&lt;p&gt;どうも初めまして、メンターのきよまるです。
+僕は大学に入るまで、学校の課題というものをやったことがありませんでした。
+高校時代には、あまりの課題提出率の低さから、家に電話がかかってきたこともありました。
+しかし僕にとってそんなことは関...&lt;/p&gt;</summary>
+    <content type="html">&lt;p&gt;どうも初めまして、メンターのきよまるです。
+僕は大学に入るまで、学校の課題というものをやったことがありませんでした。
+高校時代には、あまりの課題提出率の低さから、家に電話がかかってきたこともありました。
+しかし僕にとってそんなことは関係ありませんでした。
+その課題に時間をかけてやるだけの価値が本当にあるのか。
+それを決めるのは僕自身であるべきだと強く確信していたからです。
+先生はいつも苛立ちと失望の混じり合った表情で問いかけます。
+「どうして君は課題を出さないのか。」
+その度に僕はこう返しました。
+&lt;strong&gt;「言われたことしかできない奴は、この先の人生で何もできはしない。」&lt;/strong&gt;
+さあ、僕と一緒にサボりの向こう側の景色を見ませんか。&lt;/p&gt;
+
+&lt;h2&gt;機械学習とは&lt;/h2&gt;
+
+&lt;p&gt;機械学習の研究は人工知能の研究の一部として始まりました。
+そこで最も重要なのは人間の知識や考え方をどのように表現し、どのように利用するかということです。
+プログラミング言語にはif文やfor文がありますが、これは人間の考えを明示的に表現したものだと言えます。
+しかしながら人の思考はややこしく、特に何かを認識したり運動を学習したりすることは、そのような形で明示的に表現することが非常に困難です。
+そのような問題へのアプローチとして現在注目されているのが機械学習です。
+脳はニューロンという神経細胞がシナプスという結合部位を通して他のニューロンとのネットワークを構築しているのですが、この働きに着想を得て、機械学習ではニューラルネットワークという情報処理メカニズムが用いられています。&lt;/p&gt;
+
+&lt;h2&gt;レポートをさぼるためにやらなきゃいけないこと&lt;/h2&gt;
+
+&lt;p&gt;さて、レポートをさぼるために必要なことは大きく分けて以下の２つです。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;今までのレポートを学習させる。&lt;/li&gt;
+&lt;li&gt;学習によって得られたモデルから文章を生成する。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;順番に見て行きましょう。&lt;/p&gt;
+
+&lt;h3&gt;今までのレポートを学習させる。&lt;/h3&gt;
+
+&lt;p&gt;日本語は英語のように単語をスペースで区切らないため、初めに学習の前処理として文章を形態素解析してやる必要があります。
+今回は有名な日本語形態素解析システムであるMeCabを使ってやってみました。
+元の文章がこちら。
+&lt;code&gt;
+「今回の演習実験の目的は、パターン認識についての基本的なアルゴリズムを学ぶことである。」
+&lt;/code&gt;
+形態素解析したものがこちら。
+&lt;code&gt;
+「今回 の 演習 実験 の 目的 は 、 パターン 認識 について の　基本 的 な アルゴリズ　ム を 学ぶ こと で ある 。」
+&lt;/code&gt;
+ところどころあれな気もしますけどまぁいいんじゃないでしょうか。
+こんな感じで僕のレポートをばらばらにしてやります。
+とりあえず準備はオッケーでしょう。
+さて、文章の学習にはLSTM(long short-term memory)法を用いたRNN(Recurrent Neural Network)を用いました。
+RNNは、自身の出力をフィードバックさせるニューラルネットワークモデルで、時系列データを扱う際などによく用いられます。
+このRNNには、誤差信号が隠れ層をたどっていく中で勾配が小さくなり、意図した大きさで伝わらなくなる勾配消失問題というものがあるのですが、LSTM法を導入することで長い時間差を持った共起関係を考慮した最適化が可能になります。
+こんな感じでコーディングしました。&lt;/p&gt;
+&lt;pre class="highlight python"&gt;&lt;code&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;forward_one_step&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;x_data&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y_data&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;state&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;train&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;True&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;gpu&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;x_data&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;cuda&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;to_gpu&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;x_data&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="n"&gt;y_data&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;cuda&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;to_gpu&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;y_data&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;chainer&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Variable&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;x_data&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;volatile&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="ow"&gt;not&lt;/span&gt; &lt;span class="n"&gt;train&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;t&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;chainer&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Variable&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;y_data&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;volatile&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="ow"&gt;not&lt;/span&gt; &lt;span class="n"&gt;train&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;h0&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;model&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;embed&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;h1_in&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;model&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;l1_x&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;F&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;dropout&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;h0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;train&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;train&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="n"&gt;model&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;l1_h&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;state&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s"&gt;'h1'&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+    &lt;span class="n"&gt;c1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;h1&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;F&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;lstm&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;state&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s"&gt;'c1'&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="n"&gt;h1_in&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;h2_in&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;model&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;l2_x&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;F&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;dropout&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;h1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;train&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;train&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="n"&gt;model&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;l2_h&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;state&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s"&gt;'h2'&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+    &lt;span class="n"&gt;c2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;h2&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;F&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;lstm&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;state&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s"&gt;'c2'&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="n"&gt;h2_in&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;y&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;model&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;l3&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;F&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;dropout&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;h2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;train&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;train&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+    &lt;span class="n"&gt;state&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s"&gt;'c1'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;c1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;'h1'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;h1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;'c2'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;c2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;'h2'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;h2&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;state&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;F&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;softmax_cross_entropy&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;t&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2&gt;学習によって得られたモデルから文章を生成する。&lt;/h2&gt;
+
+&lt;p&gt;実はほとんど学習とやることは同じです。
+ただ、一番確率の高いものを選ぶようなアルゴリズムにすると、同じワードの堂々巡りになることが予想されるため、確率分布に従ってランダムに選択するように実装すれば良いでしょう。
+これできっとナイスなレポートを生成できるはずです。&lt;/p&gt;
+
+&lt;h1&gt;レポートを書かせる&lt;/h1&gt;
+
+&lt;p&gt;ついにこの時がやってきました。
+僕の純朴なクローンが見事、レポートを書ききってくれることでしょう。
+これが人類の新たな一歩です！&lt;/p&gt;
+
+&lt;p&gt;&lt;img alt="実行結果" src="/images/2015-11-17/result.png" /&gt;&lt;/p&gt;
+
+&lt;p&gt;おお…。
+ひどい…。
+なんてこった…。&lt;/p&gt;
+
+&lt;h1&gt;おわりに&lt;/h1&gt;
+
+&lt;p&gt;「私」という言葉の後に続く可能性のある語には、例えば「は」があったり、「が」があったりします。
+このように、ある語の後に続く可能性のある語のバリエーション数を平均したものをパープレキシティと言い、しばしば自然言語処理ではモデルの確からしさを表す指標にされるのですが、今回のデータセットとプログラムから作成されたモデルはパープレキシティが300以上ありました。
+先ほどの結果から、１度や2度しか出てこない単語が学習の妨げになっていることが推測されます。
+この原因には、そもそもデータセットが様々なテーマの実験レポートのみであったことが考えられますが、今後そのような低頻度で出現する単語に対してどのような学習を行うかは検討していく必要があるでしょう。
+いかがだったでしょうか。
+僕の自動レポート執筆大作戦は、残念ながら成功とは言えない結果に終わりましたがまだ終わりではありません。
+理工学部の学生として、楽をするための努力は生涯を通じて続けるべきです。
+さあ、あなたも僕と一緒にシンギュラリティの向こう側へ挑戦してみませんか。&lt;/p&gt;
+</content>
+  </entry>
+  <entry>
+    <title>初心者がハッカソンに参加してみた結果</title>
+    <link rel="alternate" href="https://blog.dit-rohm.com/2015/11/10/hackathon.html"/>
+    <id>https://blog.dit-rohm.com/2015/11/10/hackathon.html</id>
+    <published>2015-11-10T21:00:00+09:00</published>
+    <updated>2015-12-22T18:45:34+09:00</updated>
+    <author>
+      <name>ともりん</name>
+    </author>
+    <summary type="html">&lt;h1&gt;初心者がハッカソンに参加してみた結果&lt;/h1&gt;
+
+&lt;p&gt;こんにちは、DITメンターのともりんです。誰だよコイツ（笑）という方のために軽く補足すると私は6月からDITに入った経済学部の1回生です。学部から御察しの方もいらっしゃるかと思いますがプログラミ...&lt;/p&gt;</summary>
+    <content type="html">&lt;h1&gt;初心者がハッカソンに参加してみた結果&lt;/h1&gt;
+
+&lt;p&gt;こんにちは、DITメンターのともりんです。誰だよコイツ（笑）という方のために軽く補足すると私は6月からDITに入った経済学部の1回生です。学部から御察しの方もいらっしゃるかと思いますがプログラミング歴は満0年の超絶初心者です。
+そんな私がなぜDITに入ったかはさておき、今回はこんなド素人が今年の９月にDITが主催したハッカソン「DHacks」の内容とその結果についてお話します。&lt;/p&gt;
+
+&lt;h2&gt;はっかそんってなに？？&lt;/h2&gt;
+
+&lt;p&gt;ハッカソンを知らない方のために説明すると、プログラマの大会みたいなものです。参加者は３人~4人のチームを組み決められた期間内でチーム開発を行い、その技能やアイディアを競います。ハッカソンの最終日には数分間のプレゼンを行い開発したサービスをアピールします。最も優れていたチームには大賞が与えられ賞金などがもらえます。その他にもチーム以外の参加者や協賛企業と交流できるいい機会でもあります。&lt;/p&gt;
+
+&lt;h2&gt;なぜ参加することにしたのか&lt;/h2&gt;
+
+&lt;p&gt;正直最初は運営側の雑用志望でした。言わずもがな開発なんてしたことがなく、プログラミングの勉強を始めて間もない僕は参加しても足手まといになるだけだろうと思いました。&lt;/p&gt;
+
+&lt;p&gt;しかしDITの先輩方に「企業のハッカソンに出る前に一回経験しておくべき！」「こんな機会は滅多にない！」など多くの助言を頂き、会場を荒らすつもりで参加することにしました。&lt;/p&gt;
+
+&lt;h2&gt;いよいよ開幕&lt;/h2&gt;
+
+&lt;p&gt;DHacksは2日間に渡って開催されましたが、その前にアイディアソンたるものがありました。ここではチームメンバーと顔合わせをし、どのようなサービスを作るかなどを話し合います。今回は「同志社のためのwebサービス」というテーマであり、僕たちのチームはなんと出○い系サービスを作ることになりました。（笑）サービスの概要は「技術はあるが出会いに困っている田辺男子とその技術を必要としている今出川の女子を繋ぐ」というものでした。&lt;/p&gt;
+
+&lt;h2&gt;いざ、開発へ!?&lt;/h2&gt;
+
+&lt;p&gt;通常チーム開発では、見た目の部分を担当するフロントエンドと、サービスの機能やサーバー周りの動きを担当するバックエンドに役割を分担します。今回僕はフロントエンドを担当することになりました。基礎的な知識はDITが定期的に開催している勉強会のテキストで勉強していたので大丈夫でした。ちなみにDITの勉強会のテキストはGithub上で公開されているのでプログラミングを勉強したいという方は是非チェックしてみてください。&lt;/p&gt;
+
+&lt;p&gt;&lt;a href="https://github.com/dit-rohm/textbook"&gt;https://github.com/dit-rohm/textbook&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;普段テキストに沿ってコードを書くという受動的な行動に対して、ハッカソンでは0から自分で考えてコードを能動的に書かなければいけなかったので、最初は何をしたらいいのか分からず戸惑いました。しかし、チームで一緒になったハッカソン経験者の方やDITの偉大な先輩方がメンターとして開発をサポートしてくださったのでなんとか軌道に乗ることができ完成するに至りました。これもハッカソンの良いところで、自分が持っている技術を実践に移せるだけでなく、周りの人からノウハウや技術を教わることができます。&lt;/p&gt;
+
+&lt;p&gt;&lt;img alt="lovereport" src="/images/2015-11-10/01.jpg" /&gt;&lt;/p&gt;
+
+&lt;h2&gt;結果は。。。&lt;/h2&gt;
+
+&lt;p&gt;残念ながら僕たちのチームが開発したサービスは入賞することができませんでした。しかし周りからは意外と好評でハッカソン終了後、「ぶっ飛んだサービスだったけどおもしろかった」「サイトの見た目がかわいらしくて好きだった」「是非本格的にこのサービスをリリースしてほしい」などと、賞は頂けなかったものの達成感に満ち溢れました。そしてそこで満足して終わるだけでなく、そこから新しい技術に挑戦したいという意欲が湧き、次へのモチベーションへと繋がりました。&lt;/p&gt;
+
+&lt;p&gt;&lt;img alt="hackathon" src="/images/2015-11-10/02.jpg" /&gt;
+　　&lt;/p&gt;
+
+&lt;h2&gt;「私もハッカソンに出てみたい！」そんな方のために&lt;/h2&gt;
+
+&lt;p&gt;プログラミングを勉強しているけど自信がない。チーム開発に興味がある。そういう方たちのためにお知らせです。なんと来年の冬の2月ごろに、夏に引き続きDITはWinterハッカソンを同志社で開催することが決定しました！経験者はもちろんプログラミング初心者でも気軽に参加できるハッカソンです。もしこの記事を読んで少しでも興味が湧いたなら、近いうちに正式な告知があるので奮ってご参加下さい。&lt;/p&gt;
+</content>
+  </entry>
+  <entry>
+    <title>知っておくべき知的財産権　著作権</title>
+    <link rel="alternate" href="https://blog.dit-rohm.com/2015/08/13/IP.html"/>
+    <id>https://blog.dit-rohm.com/2015/08/13/IP.html</id>
+    <published>2015-08-13T00:00:00+09:00</published>
+    <updated>2015-12-22T18:45:34+09:00</updated>
+    <author>
+      <name>いいのっく</name>
+    </author>
+    <summary type="html">&lt;p&gt;どうも、こんにちは。DITメンターのいいのっくです。&lt;/p&gt;
+
+&lt;p&gt;皆さん、「知的財産権」というものをご存知でしょうか？
+きっと名前くらいは聞いたことがあるかと思います。
+色々なところで聞く著作権や特許、肖像権もこの「知的財産権」の中に含まれてい...&lt;/p&gt;</summary>
+    <content type="html">&lt;p&gt;どうも、こんにちは。DITメンターのいいのっくです。&lt;/p&gt;
+
+&lt;p&gt;皆さん、「知的財産権」というものをご存知でしょうか？
+きっと名前くらいは聞いたことがあるかと思います。
+色々なところで聞く著作権や特許、肖像権もこの「知的財産権」の中に含まれています。&lt;/p&gt;
+
+&lt;p&gt;WEBで何かを行おうとすると、自ずと最終的にはインターネット上に公開することになると思います。
+この作ったものが公開しても良いものなのか。また、この知的財産権に引っかかっていないのか。
+貴方には正確に判断できますか？　正直なところ、私自身も全てを確認できるわけでもありません。
+しかし、知っているかいないかで大きな差があります。
+上記の場合以外でも、大学生であれば嫌々ながら身近な存在であるレポートなどでも関わってきたりしますね。&lt;/p&gt;
+
+&lt;p&gt;この記事では、そんな知的財産権の中から「著作権」について、できるだけWEBに関わるところをピックアップしていきたいと思います。
+なお、私自身は法律やこの知的財産権を専門に扱っているわけではないので、もしかすると間違いがあるかもしれません。
+その場合はすぐに訂正させていただきますのでご連絡ください。&lt;/p&gt;
+
+&lt;p&gt;今回、この記事を書くに辺り、有斐園出版「知的財産権入門 茶園成樹編」(2013年12月25日初版第2刷発行)を参考にしています。&lt;/p&gt;
+
+&lt;h2&gt;そもそも　知的財産権 とは？&lt;/h2&gt;
+
+&lt;p&gt;「そもそも知的財産権ってなんやねん」
+そんな人もいるでしょう。&lt;/p&gt;
+
+&lt;p&gt;簡単に言うと、知的財産権とは、知的財産がどう守られているのか、どう使うものなのかの取決め――ルールです。&lt;/p&gt;
+
+&lt;p&gt;じゃあ、この知的財産とは何か。何が含まれているのか。
+俗な言い方をするなら、お金になるような価値のある情報です。
+有形な現実にある物体――有体物ではなく、無体物に関するものとなります。ちょっとややこしいですね。&lt;/p&gt;
+
+&lt;p&gt;そして、知的財産権と言っていますが、この知的財産を全部まとめて保護してくれる素敵な法律は存在しません。
+あれ？と思うかもしれませんが、具体的に言うと特定の知的財産を保護対象にしている色々な法律が存在しています。
+これをまとめて、知的財産権と呼んでいるのです。
+それら知的財産権が作られることとなった経緯や歴史など語るに語りつくせないものが多くあるのですが、今回は細かいところは置いておいて、ズバッと内容に行きましょう。&lt;/p&gt;
+
+&lt;h2&gt;著作権法&lt;/h2&gt;
+
+&lt;h3&gt;　著作権　とは&lt;/h3&gt;
+
+&lt;p&gt;日常生活においても「著作権的にOUT」だとかよく聞く単語だと思います。
+この著作権法の保護対象は、文字通り「著作物」です。
+著作物とは、「思想又は感情を創作的に表現したものであつて、文芸、文学、美術又は音楽の範囲に属するもの」と定義されています(著作2条1項1号)。&lt;/p&gt;
+
+&lt;p&gt;「思想又は感情」を他社に認識可能な状態に表現している必要があるので、生データや現実に合ったただの事象は対象外となります。
+また、どこからが創作的なのでしょうか？　これは誰かの作ったものを真似したのではなく、自分自身で作成したのならば創作的なものとなります。
+加えて「文芸、文学、美術又は音楽の範囲に属するもの」となっているので、実用的なものや産業的なものは含まれません。こちらは特許法との棲み分けのような形となっています。
+なので、拾った綺麗な石には著作物はありませんし、模倣品にももちろんありません。これはいくら精巧なレプリカであっても同じです。
+車のデザインを行っても、それは産業的なデザインに当たるので著作物とはなりません。&lt;/p&gt;
+
+&lt;p&gt;著作物の例を挙げておくと
+1.小説、脚本、論文、講演その他の言語の著作物
+2.音楽の著作物
+3.舞踏または無言劇の著作物
+4.絵画、版画、彫刻その他の美術の著作物
+5.建築の著作物
+6.地図または学術的な性質を有する図面、図表、模型その他の図形の著作物
+7.映画の著作物
+8.写真の著作物
+9.プログラムの著作物
+(著作10条1項)&lt;/p&gt;
+
+&lt;p&gt;WEBサイト制作においては、1，8，9辺りが該当することが多いでしょう。
+次いでよくあるのは2でしょうか。&lt;/p&gt;
+
+&lt;h3&gt;　「誰が」保護されるのか&lt;/h3&gt;
+
+&lt;p&gt;著作権に保護されるのは、その著作物を創作した者です。
+著作者は、創作した著作物について著作者の権利を有します。&lt;/p&gt;
+
+&lt;p&gt;ただし、企業の職務として制作した場合は例外となっています。
+何かしらの契約、勤務規則などで別段の定めがないとき、著作者はその企業となります(著作15条)のでご注意ください。&lt;/p&gt;
+
+&lt;h3&gt;　「いつから」保護されるのか&lt;/h3&gt;
+
+&lt;p&gt;著作権は、取得のために何もする必要のないものとなっています(著作17条2項)。
+創作したまさにその瞬間に自動的に著作者は著作権を有するようになります。
+ついでに「いつまで」保護されるのかは国ごとに違い、日本は最短期間になっていて著作者の死後50年間で著作権の適用が切れてしまいます。&lt;/p&gt;
+
+&lt;p&gt;「青空文庫」などは著作権が切れた小説が集められていて、自由に利用できますよね。&lt;/p&gt;
+
+&lt;h2&gt;著作権により保護されるもの&lt;/h2&gt;
+
+&lt;p&gt;さて、ここまでで著作権がどんなものなのか、触りを述べてきました。
+細かく書くといくらでもページ数が稼げてしまうので、ここからは一番気になるでしょう「結局何がダメなのか」を書いて行きましょう。&lt;/p&gt;
+
+&lt;h3&gt;　公衆送信権&lt;/h3&gt;
+
+&lt;p&gt;著作者の有する権利の中に支分権というものがあり、その中に公衆送信権というものがあります。
+ある意味一番身近な著作権かもしれないもので、俗にいう無断アップロードというヤツがはの公衆送信権を侵しています。&lt;/p&gt;
+
+&lt;p&gt;インターネット上などで著作物を自動的に公衆に送信できる状態のことを送信可能化といい、
+著作者がダウンロードされたかを確認することは難しいのでアップロードされた時点で侵害となります。&lt;/p&gt;
+
+&lt;h3&gt;　複製権&lt;/h3&gt;
+
+&lt;p&gt;支分権の一つ。著作物の複製に対する権利(著作21条)です。
+他人が撮った写真を勝手にWEBサイトに載せてしまう行為はこの権利をも侵害しています。
+また、日常生活でよくあることとしては、コピー機でのコピー、音楽ファイルをPCにダウンロードする行為もここに含まれます。&lt;/p&gt;
+
+&lt;p&gt;もちろん借りてきた音楽CDをコピーして音楽プレイヤーに入れて個人的に楽しむ分には私的使用となるので含まれません。&lt;/p&gt;
+
+&lt;h3&gt;　公表権&lt;/h3&gt;
+
+&lt;p&gt;次はこの公表権。著作者人格権という著作者が著作物に込めた思想や感情を――思い入れやこだわりを守るための権利があります。
+公表権はその中に含まれ、著作者は公表するにあたり、いつ、どのように公表するのか、その取扱いについての権利を持ちます(著作18条)。
+皆さんも例えば、「何かの記念日に」だとか「語呂合わせでこの時間に」だとか、たまに思うこともありますよね？　その自由を確保してくれている権利です。
+他人のものを勝手に何かに投稿したり、ネットに上げてしまう行為はこれを侵害していることになります。&lt;/p&gt;
+
+&lt;h3&gt;　氏名表示権&lt;/h3&gt;
+
+&lt;p&gt;こちらも著作者人格権の中の一つ。
+著作権法19条1項により、著作者は著作物を公開する際に、実名公開するのか、ペンネームなどの変名で表示するのか、はたまた名前を出さないのかを選ぶ権利を持ちます。&lt;/p&gt;
+
+&lt;p&gt;何かしらの投稿をもらい、それを公開していくという形態を取っている場合に指定された名前以外で公開するのはダメ、ということです。
+ラジオなどでもペンネームでハガキを読み上げますよね？　あれと同じです。&lt;/p&gt;
+
+&lt;h3&gt;　同一保持権&lt;/h3&gt;
+
+&lt;p&gt;著作者人格権の一つで、著作物の完全性を守る権利のことです(著作20条)。
+簡単に言うと、著作物を切ったり貼ったりすると著作者が意図したものとは違うものになってしまいます。なので、著作物を勝手に改変してはいけないよ、という権利です。
+意図しないものになるのを防ぐための権利であるので、改変が意に反したものでないならば大丈夫ですが、反したものであるならば改善されていようが改悪されていようが侵害になります。
+パロディもこの権利によって問題視されることがあります。&lt;/p&gt;
+
+&lt;p&gt;何かを引用したりする場合、著作物(特に言うと論文など)によっては句読点や改行の変更だけでもOUTの時があるので要注意です。&lt;/p&gt;
+
+&lt;p&gt;そして、情報系の人にとって重要なことがこの同一保持権には含まれていて、プログラムの著作物については特殊な制限がかけられています。
+どんなものかと言いますと、
+「利用者はバグがあったら修正してもいいし、他のコンピュータに適応するように改変してもいい。
+　あと、処理速度を向上できるように改善してもいいよー」
+というもの。
+プログラムは実用性というものが重要視され、またその著作物の中に著作者の名誉や人格といったものがでにくいでしょう、という理由でこのような制限があります。&lt;/p&gt;
+
+&lt;p&gt;また著作20条4項4号には「やむを得ない」という文言が用いられていて、たとえば要領の都合上どうしても削れないときは画像の画質を下げてアップロードしてもOKとなります。&lt;/p&gt;
+
+&lt;h2&gt;　まとめ&lt;/h2&gt;
+
+&lt;p&gt;さーっとまとめて来ましたが、如何だったでしょうか？
+途中でも書きましたが、かーなーり省略しています。
+皆さんが何気なく過ごしている日常の中でも、すぐ傍に著作物は点々としています。
+絵から小説、写真にプログラムとちょっとでも創作的な活動をしていれば、貴方自身も著作権を持つ著作者です。
+こういったことにも目を向けて活動してみるのも、また何か発見があるかもしれません。&lt;/p&gt;
+
+&lt;p&gt;「あぁ、アイツって実はアウトだったのか」
+そんなことも意外とよくあります。&lt;/p&gt;
+
+&lt;p&gt;今回は著作物について書いてきましたが、知的財産権に含まれる法律は他にもたくさん存在しています。
+これを機に少しでも気にしてもらえるようになればいいなー、と個人的に思います。&lt;/p&gt;
+</content>
+  </entry>
+  <entry>
+    <title>バイリンガルニュースのおすすめ回6選</title>
+    <link rel="alternate" href="https://blog.dit-rohm.com/2015/08/06/bilingual-news.html"/>
+    <id>https://blog.dit-rohm.com/2015/08/06/bilingual-news.html</id>
+    <published>2015-08-06T21:13:00+09:00</published>
+    <updated>2015-12-22T18:45:34+09:00</updated>
+    <author>
+      <name>けいちゃん</name>
+    </author>
+    <summary type="html">&lt;p&gt;こんにちは、けいちゃんです。&lt;a href="https://dit-rohm.com/blog/2015/07/28/on-the-train.html"&gt;前回の記事&lt;/a&gt;でも出てきた&lt;a href="https://itunes.apple.com/jp/podcast/bairingarunyusu-bilingual/id653415937?mt=2&amp;amp;ign-mpt=uo%3D4"&gt;バイリンガルニュース&lt;/a&gt;。私も通学中に聴いていて、172回（2015.8.3時点）全て聴ききました。その中でも特に印象に残っている、おすすめの回を紹介します。&lt;/p&gt;
+
+&lt;h2&gt;バイリンガルニュースとは&lt;/h2&gt;
+...</summary>
+    <content type="html">&lt;p&gt;こんにちは、けいちゃんです。&lt;a href="https://dit-rohm.com/blog/2015/07/28/on-the-train.html"&gt;前回の記事&lt;/a&gt;でも出てきた&lt;a href="https://itunes.apple.com/jp/podcast/bairingarunyusu-bilingual/id653415937?mt=2&amp;amp;ign-mpt=uo%3D4"&gt;バイリンガルニュース&lt;/a&gt;。私も通学中に聴いていて、172回（2015.8.3時点）全て聴ききました。その中でも特に印象に残っている、おすすめの回を紹介します。&lt;/p&gt;
+
+&lt;h2&gt;バイリンガルニュースとは&lt;/h2&gt;
+
+&lt;p&gt;簡単に紹介しておきます。日本で大人気のPodcast番組「バイリンガルニュース」は、MamiとMichaelが日本語と英語でニュースを紹介し、「バイリンガル会話形式」で解説する番組です。「バイリンガル会話形式」とは、Mamiが日本語、Michaelが英語で会話する形式です。ピックアップされるニュースは、政治、宇宙、最新の研究、男女関係など様々です。&lt;/p&gt;
+
+&lt;p&gt;&lt;a href="http://bilingualnews.libsyn.com/"&gt;Web&lt;/a&gt;または&lt;a href="https://itunes.apple.com/jp/podcast/bairingarunyusu-bilingual/id653415937?mt=2"&gt;iTunes&lt;/a&gt;やポッドキャストアプリから聴くことができます。&lt;/p&gt;
+
+&lt;h2&gt;おすすめ回&lt;/h2&gt;
+
+&lt;p&gt;ニュースを読む通常回と、ゲストを迎えてconversationする特別編がありますが、特に印象に残っている回をそれぞれピックアップして紹介します。&lt;/p&gt;
+
+&lt;h3&gt;137. バイリンガルニュース&lt;/h3&gt;
+
+&lt;p&gt;&lt;strong&gt;20:47 ~ 子供嘘実験&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;大人に嘘をつかれた子供はその大人に対して自らも嘘をつく傾向がある、というニュースです。躾や感情を傷付けない目的で子供に嘘をつきがちですが、子供でもわかる嘘をつき続けると子供まで嘘つきになってしまうんでしょうか。子育ての難しさを感じる話でした。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;34:10 ~ 共感覚&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;共感覚は訓練すれば習得できる、というニュースです。共感覚とは、文字や音に対して色や性格を感じるなど、ある刺激に対して複数の感覚が生じる知覚現象です。共感覚は、共感覚になりやすい遺伝子を持っているのに加え、環境要因によって起こるそうなので、訓練次第では共感覚を身につけることができるかもしれませんね。&lt;/p&gt;
+
+&lt;h3&gt;170. バイリンガルニュース&lt;/h3&gt;
+
+&lt;p&gt;&lt;strong&gt;07:19 ~ キス文化&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;世界168の文化のうち、54%において性的な意味でのキスをしていない、というニュースです。日本では恋人同士キスをするのは当たり前のようになっていますが、人間にとってキスは性行動の一部であり、環境や文化的な要因によってキスをするようになるということだそう。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;16:47 ~ 太ったキャラ&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;太ったキャラを見せられた子供は、標準体型のキャラを見た子供に比べ、お菓子を2倍食べることがわかった、というニュースです。ドラえもんを見た子供は太るのかという話から、アメリカの食べ物・飲み物の話がエピソード中で話されています。&lt;/p&gt;
+
+&lt;h3&gt;68. 特別編 吉田研作教授&lt;/h3&gt;
+
+&lt;p&gt;上智大学で「バイリンガル教育」というクラスを教えていらっしゃる吉田研作教授の回です。韓国、中国、シンガポールなど、アジアの国々での英語事情や日本の英語教育の問題点、英語を学ぶ上で心に留めておくべきことなど、英語学習者にとっては非常に聴き応えのあるエピソードです。まずはじめに聴くのをおすすめします。&lt;/p&gt;
+
+&lt;h3&gt;153. 特別編 Hirano&lt;/h3&gt;
+
+&lt;p&gt;農場経営者Hiranoさんの回です。Hiranoさんは、アメリカで農業について学び、キウイフルーツの研究開発を行っていらっしゃる方です。果物同士を掛け合わせて様々な色や味のフルーツを作るCross-Pollination（他家受粉）の話や、アメリカと日本の農業の違い、日本の流通の問題点、自然とともに暮らすことについてなど、普段聞けない話が満載です。&lt;/p&gt;
+
+&lt;h3&gt;163. 特別編 Miyagawa&lt;/h3&gt;
+
+&lt;p&gt;&lt;a href="http://rebuild.fm"&gt;Rebuild.fm&lt;/a&gt;の宮川さんの回です。サンフランシスコでエンジニアをしていらっしゃる宮川さんがどのように英語を学んだか、コンピューターやプログラミングを学んだキッカケ、Internet of Things、人工知能の特異点、シリコンバレーと日本の文化の違い、などエンジニアなら聴いておきたい回ですね。&lt;/p&gt;
+
+&lt;h3&gt;51. 特別編 ミーシャ&lt;/h3&gt;
+
+&lt;p&gt;Michaelの友人のミーシャの回です。この回は後半、かなり生々しい話になっているので、聴く際はイヤホンをお忘れなく。ただ、ミーシャのキャラが良くかなり面白いのでおすすめです。チリで事故にあった話、キャバクラ、バイセクシャル、男女SEXの違い、女性同士のSEX、Online Dating、Tenga、Masturbathon など。&lt;/p&gt;
+
+&lt;h2&gt;まとめ&lt;/h2&gt;
+
+&lt;p&gt;いかがだったでしょうか。上記の特別編は特に面白いものばかりなので、是非聴いてみてください！紹介しきれませんでしたが、通常回も面白い回がたくさんあります。通学・通勤中など時間のあるときに聴くと、面白い話が聞けてリスニング力も上がるので一石二鳥ですね。皆さんも是非バイリンガルニュースを活用してください。&lt;/p&gt;
+</content>
+  </entry>
+  <entry>
+    <title>通学中の暇つぶしにおすすめなこと15選</title>
+    <link rel="alternate" href="https://blog.dit-rohm.com/2015/07/28/on-the-train.html"/>
+    <id>https://blog.dit-rohm.com/2015/07/28/on-the-train.html</id>
+    <published>2015-07-28T10:00:00+09:00</published>
+    <updated>2015-12-22T18:45:34+09:00</updated>
+    <author>
+      <name>ちい</name>
+    </author>
+    <summary type="html">&lt;p&gt;こんにちは！DITメンターのちいです。
+気付けば8月になろうとしていますね。月日が経つのは本当に早いです。&lt;/p&gt;
+
+&lt;p&gt;さて、私は大阪から同志社京田辺キャンパスまで電車で通学していて、通学時間がトータル2時間弱くらいあります。今回は、私が通学中...&lt;/p&gt;</summary>
+    <content type="html">&lt;p&gt;こんにちは！DITメンターのちいです。
+気付けば8月になろうとしていますね。月日が経つのは本当に早いです。&lt;/p&gt;
+
+&lt;p&gt;さて、私は大阪から同志社京田辺キャンパスまで電車で通学していて、通学時間がトータル2時間弱くらいあります。今回は、私が通学中に電車内で暇つぶしにしていることを紹介したいと思います。&lt;/p&gt;
+
+&lt;h2&gt;聴く系&lt;/h2&gt;
+
+&lt;p&gt;田辺坂を登っている時間って、何もすることなくてすごく暇ですよね。&lt;/p&gt;
+
+&lt;h3&gt;&lt;a href="https://itunes.apple.com/jp/podcast/bairingarunyusu-english-japanese/id653415937"&gt;バイリンガルニュース&lt;/a&gt;&lt;/h3&gt;
+
+&lt;p&gt;Mami&amp;amp;Michaelがバイリンガル会話形式でニュースを紹介しているPodcast。めっちゃおもしろいです！この前&lt;a href="http://www.amazon.co.jp/gp/product/B010RVTKQQ/ref=s9_simh_gw_p193_d4_i1?pf_rd_m=AN1VRQENFRJN5&amp;amp;pf_rd_s=desktop-1&amp;amp;pf_rd_r=0MW8CT19G2HD2R5G1F37&amp;amp;pf_rd_t=36701&amp;amp;pf_rd_p=207655209&amp;amp;pf_rd_i=desktop"&gt;バイリンガルニュースTシャツ&lt;/a&gt;購入しました。読み物ですが、&lt;a href="http://www.gentosha.jp/category/mojioshaberi"&gt;Mamiの文字おしゃべり&lt;/a&gt;、&lt;a href="http://www.webasta.jp/serial/onayami-share/"&gt;Mamiのお悩みシェア&lt;/a&gt;も一緒にどうぞ。&lt;/p&gt;
+
+&lt;h3&gt;&lt;a href="http://awa.fm/"&gt;AWA&lt;/a&gt;&lt;/h3&gt;
+
+&lt;p&gt;音楽配信アプリ。最近音楽はこれで聞いてます。&lt;/p&gt;
+
+&lt;h2&gt;読む系&lt;/h2&gt;
+
+&lt;p&gt;電車の中ってゆっくり時間が取れるので、読みものするには良いですよね。&lt;/p&gt;
+
+&lt;h3&gt;本&lt;/h3&gt;
+
+&lt;p&gt;最近は、乾くるみさんのセカンド・ラブを読みました。以前イニシエーション・ラブを読んで衝撃を受けたのですが、今回も予想外でした。一時期山田悠介さんの本をよく読んでいました。&lt;/p&gt;
+
+&lt;h3&gt;&lt;a href="http://qiita.com/"&gt;Qiita&lt;/a&gt;&lt;/h3&gt;
+
+&lt;p&gt;プログラミングに関する知識を記録・共有するためのサービス。Facebookでいいね！をしていて、タイムラインに流れて来る気になったものを読んでいます。&lt;/p&gt;
+
+&lt;h3&gt;&lt;a href="http://b.hatena.ne.jp/"&gt;はてなブックマーク&lt;/a&gt;&lt;/h3&gt;
+
+&lt;p&gt;ソーシャルブックマーク。Twitterで&lt;a href="https://twitter.com/hatebuit"&gt;はてブ新着エントリー（コンピュータIT）&lt;/a&gt;をフォローしていて、タイムラインに流れて来る気になったものを読んでいます。&lt;/p&gt;
+
+&lt;h3&gt;&lt;a href="https://www.smartnews.com/ja/"&gt;SmartNews&lt;/a&gt;&lt;/h3&gt;
+
+&lt;p&gt;ニュース配信アプリ。読み込みを待てないタイプなので、絶対にSmatViewボタン押します。&lt;/p&gt;
+
+&lt;h3&gt;&lt;a href="http://chiebukuro.yahoo.co.jp/"&gt;Yahoo!知恵袋&lt;/a&gt;&lt;/h3&gt;
+
+&lt;p&gt;たまに総合ランキングを見ます。いろんな人がいて、いろんな悩みがありますね。&lt;/p&gt;
+
+&lt;h2&gt;漫画&lt;/h2&gt;
+
+&lt;h3&gt;&lt;a href="http://www.comico.jp/"&gt;comico&lt;/a&gt;&lt;/h3&gt;
+
+&lt;p&gt;タテ読み！タダ読み！でお馴染みの、毎日更新のオリジナル作品が無料で読める、コミック＆ノベルサービス。完全無料でフルカラー、公式作品 (comico公式作家による漫画)とチャレンジ作品（一般の方によって投稿された漫画）を合わせると作品数が凄く多い。このアプリには本当にお世話になっています。&lt;/p&gt;
+
+&lt;h4&gt;おすすめ公式3作品&lt;/h4&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;&lt;a href="http://www.comico.jp/articleList.nhn?titleNo=32"&gt;パステル家族&lt;/a&gt;&lt;/strong&gt;：主人公のマヨちゃんとその家族、友達達が繰りなすほのぼのコメディ。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;a href="http://www.comico.jp/articleList.nhn?titleNo=27"&gt;ネト充のススメ&lt;/a&gt;&lt;/strong&gt;：恋愛要素が強い、かわいい！ネトゲやったことないけど楽しそう。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;a href="http://www.comico.jp/articleList.nhn?titleNo=3410"&gt;ミイラの飼い方&lt;/a&gt;&lt;/strong&gt;：ミイラのミーくんが本当にかわいくって癒されます。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4&gt;おすすめベストチャレンジ3作品&lt;/h4&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;&lt;a href="http://www.comico.jp/challenge/articleList.nhn?titleNo=6609"&gt;2LDK&lt;/a&gt;&lt;/strong&gt;：どこにでもいる普通のカップルとシロクマのシロのお話。更新頻度高め！ほのぼのしててめっちゃかわいい。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;a href="http://www.comico.jp/challenge/articleList.nhn?titleNo=3176"&gt;Devinette&lt;/a&gt;&lt;/strong&gt;：幼馴染み以上恋人未満の二人による、クイズを交えた、なかなか素直になれない恋愛模様。クイズが良い味出してる！&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;a href="http://www.comico.jp/challenge/articleList.nhn?titleNo=2314"&gt;カスタネット&lt;/a&gt;&lt;/strong&gt;：ツンデレな彼と、その彼を一途に想い続ける彼女。完結してます。続編も→&lt;a href="http://www.comico.jp/challenge/articleList.nhn?titleNo=7958"&gt;カスタネットR&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3&gt;&lt;a href="https://manga.line.me/"&gt;LINE漫画&lt;/a&gt;&lt;/h3&gt;
+
+&lt;p&gt;「LINE」の公式電子マンガアプリ。人気漫画がまるごと3巻まで無料で読めたり、曜日ごとに更新される無料漫画もあります。本当に無料で十分楽しめるアプリ。1日1回、漫画をシェアするとアプリ内で使えるコインが10コインもらえます。毎日シェアすれば1ヶ月で300コインも貯まりますよ！&lt;/p&gt;
+
+&lt;h4&gt;おすすめ3作品&lt;/h4&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;&lt;a href="https://manga.line.me/webtoons/periodic?id=414852"&gt;オレンジ・マーマレード&lt;/a&gt;&lt;/strong&gt;：主人公はバンパイア。ちょっぴり切ない恋物語。完結してます。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;a href="https://manga.line.me/webtoons/periodic?id=414813"&gt;チーズ・イン・ザ・トラップ&lt;/a&gt;&lt;/strong&gt;：平凡な女子大生と謎だらけの先輩。 微妙な関係の彼らが繰り広げる物語。登場するキャラにかなりイライラしちゃうけどおもしろくて読んでしまう。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;a href="https://manga.line.me/webtoons/periodic?id=414874"&gt;ドキドキズキズキ&lt;/a&gt;&lt;/strong&gt;：一応ラブストーリー。色々辛すぎて本当にドキドキズキズキするお話。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3&gt;&lt;a href="https://www.mangabox.me/"&gt;マンガボックス&lt;/a&gt;&lt;/h3&gt;
+
+&lt;p&gt;こちらも漫画アプリ。私はマンガボックスには読みたい漫画がないので、&lt;a href="https://www-indies.mangabox.me/"&gt;マンガボックスインディーズ&lt;/a&gt;に投稿されているマンガを読んでいます。一般の方によって投稿された漫画です。&lt;/p&gt;
+
+&lt;h4&gt;おすすめ3作品&lt;/h4&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;&lt;a href="https://www-indies.mangabox.me/episode/20506/"&gt;10回のキスをしよう&lt;/a&gt;&lt;/strong&gt;：ある家族の日常オムニバス。とってもあったかい気持ちになります。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;a href="https://www-indies.mangabox.me/episode/10912/"&gt;Perico 短篇集 7Days&lt;/a&gt;&lt;/strong&gt;：恋愛漫画短篇集。これぞ少女漫画！読み応えあり！&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;a href="#"&gt;フランス人のブブさん&lt;/a&gt;&lt;/strong&gt;：フランス人彼氏ブブさんとアラサーでオタクな日本人女子まじこの4コマ国際恋愛漫画。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2&gt;ゲーム&lt;/h2&gt;
+
+&lt;p&gt;最近あんまりゲームはしてません。&lt;/p&gt;
+
+&lt;h3&gt;&lt;a href="http://oj.bakuretuken.com/"&gt;ブラウザで「ワンナイト人狼」&lt;/a&gt;&lt;/h3&gt;
+
+&lt;p&gt;DITのMTGからの帰りにみんなでしています。人狼めっちゃ楽しい！人狼にはなりたくないけど！&lt;/p&gt;
+
+&lt;h3&gt;&lt;a href="https://itunes.apple.com/jp/app/line-kukkiran/id743669894?mt=8"&gt;LINE クッキーラン&lt;/a&gt;&lt;/h3&gt;
+
+&lt;p&gt;だいぶ昔にハマっていてもうずっとやっていなかったのですが、最近またハマっています。みんなやっていないのでスコアを競う相手がいませんが、誰にも負ける気がしません。&lt;/p&gt;
+
+&lt;h2&gt;思い出に浸る系&lt;/h2&gt;
+
+&lt;p&gt;暇な時間こそゆっくり過去を振り返ってみませんか？&lt;/p&gt;
+
+&lt;h3&gt;カメラフォルダを見る&lt;/h3&gt;
+
+&lt;p&gt;昔撮った写真を見返す。楽しい。&lt;/p&gt;
+
+&lt;h3&gt;日記を読み返す&lt;/h3&gt;
+
+&lt;p&gt;私は手帳のウィークリー欄に日記を書いています（最近やってないですが）。なので気づいた時に読み返します。意外とはっきり思い出せる。ボケ防止に良さそう！&lt;/p&gt;
+
+&lt;h3&gt;LINEトークを読み返す&lt;/h3&gt;
+
+&lt;p&gt;LINEトーク履歴は残しておく派です。3年前のトークとかを見て、懐かしいな〜こんな時もあった〜ってなってます。&lt;/p&gt;
+
+&lt;hr&gt;
+
+&lt;p&gt;以上です。普段みなさんがしていることと特に変わりはないかもしれませんが、もしやってない！というものがあれば暇つぶしにやってみてください。&lt;/p&gt;
+</content>
+  </entry>
+  <entry>
+    <title>Macにしてから使い始めたアプリ10選</title>
+    <link rel="alternate" href="https://blog.dit-rohm.com/2015/07/22/macapp.html"/>
+    <id>https://blog.dit-rohm.com/2015/07/22/macapp.html</id>
+    <published>2015-07-22T15:56:00+09:00</published>
+    <updated>2015-12-22T18:45:34+09:00</updated>
+    <author>
+      <name>ryoupon</name>
+    </author>
+    <summary type="html">&lt;h1&gt;私がWindowsからMacにして使い始めたアプリ10選&lt;/h1&gt;
+
+&lt;p&gt;こんにちは。りょうぽんです。
+今回は私が最近WindowsからMacにPCを変えた時に使い始めたアプリ10個を上げていこうと思います。
+これらはほとんどMac使いの方々から紹...&lt;/p&gt;</summary>
+    <content type="html">&lt;h1&gt;私がWindowsからMacにして使い始めたアプリ10選&lt;/h1&gt;
+
+&lt;p&gt;こんにちは。りょうぽんです。
+今回は私が最近WindowsからMacにPCを変えた時に使い始めたアプリ10個を上げていこうと思います。
+これらはほとんどMac使いの方々から紹介していただいたもので、もうすでに他のサイトでも同じようなことが紹介されていますが、
+今回はとくに便利なアプリをDIT用に改めて紹介します。
+あとは、特にMac専用みたいなのを紹介しているわけでもなく、私が使っているアプリの紹介という形ですのであしからず。  &lt;/p&gt;
+
+&lt;p&gt;公式サイトとcaskでインストールするコマンドを書いておいたので気になったものがあればぜひインストールしてみてください。
+もしhomebrewやcaskを入れていない場合はこれ以下からターミナルにていれてください。&lt;br&gt;
+homebrew:&lt;code&gt;ruby -e &amp;quot;$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)&amp;quot;&lt;/code&gt;&lt;br&gt;
+homebrew-cask:&lt;code&gt;brew install caskroom/cask/brew-cask&lt;/code&gt;&lt;/p&gt;
+
+&lt;h2&gt;iTerm2&lt;/h2&gt;
+
+&lt;p&gt;このターミナルがとても秀逸で、Windowsではコマンドプロンプトでぽちぽちやってたんですが、使い勝手が全然違います…ぜひzshを入れてみてください。
+また、色味とかも自分用に設定できるのでカラースキームも変更してみてください。
+おしゃれにターミナルを使いこなしたい人にぜひ。
+ちなみに私はHybridというカラースキームを使っています。&lt;br&gt;
+ダウンロードは&lt;a href="https://www.iterm2.com/" target="_blank"&gt;こちら&lt;/a&gt;&lt;br&gt;
+コマンドはこちら&lt;code&gt;brew cask install iterm2&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img alt="iterm2" src="/images/2015-07-22/01.png" /&gt;&lt;/p&gt;
+
+&lt;h2&gt;TotalSpaces&lt;/h2&gt;
+
+&lt;p&gt;このアプリはデスクトップの切り替えを直感的にしてくれます。
+私は知らないんですが、昔のOS Xにはあった機能をアプリで実現したという形ですね。
+今はデスクトップの移動は横なのですが、これを使うと上下左右にデスクトップを配置できます。
+切り替えは自分の好きなキーバインドを設定できます。&lt;br&gt;
+ダウンロードは&lt;a href="http://totalspaces.binaryage.com/" target="_blank"&gt;こちら&lt;/a&gt;&lt;br&gt;
+コマンドはこちら&lt;code&gt;brew cask install totalspaces&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img alt="ts" src="/images/2015-07-22/02.png" /&gt;&lt;/p&gt;
+
+&lt;h2&gt;Shift It&lt;/h2&gt;
+
+&lt;p&gt;Windowsでいう&lt;code&gt;Win key + 矢印&lt;/code&gt;です。
+Windowsでは画面の分割をスムーズにできていたのに、と思っていたらMacではこのアプリで同じことができます。
+こちらも自分で好きなキーバインドを当てはめてください。&lt;br&gt;
+ダウンロードは&lt;a href="https://code.google.com/p/shiftit/" target="_blank"&gt;こちら&lt;/a&gt;&lt;br&gt;
+コマンドはこちら&lt;code&gt;brew cask install shiftit&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img alt="si" src="/images/2015-07-22/03.png" /&gt;&lt;/p&gt;
+
+&lt;h2&gt;ImageMagick&lt;/h2&gt;
+
+&lt;p&gt;画像の変換がしたい、と思ったときにはこれです。
+コマンドで変えたい画像をぽちっと入力するだけで変換してくれます。
+特にTeXで.epsファイルを作るときに役立ってます。
+homebrewからインストールしてあげてください。
+コマンドとしては&lt;code&gt;convert aaa.png aaa1.jpg&lt;/code&gt;のようにしてあげると変換してくれます。&lt;br&gt;
+ダウンロードは&lt;a href="http://www.imagemagick.org/script/index.php" target="_blank"&gt;こちら&lt;/a&gt;&lt;br&gt;
+コマンドはこちら&lt;code&gt;brew install imagemagick&lt;/code&gt;&lt;/p&gt;
+
+&lt;h2&gt;Kobito&lt;/h2&gt;
+
+&lt;p&gt;マークダウンをリアルタイムプレビューしながらかけるアプリです。
+よくお世話になっているQiitaさんにも投稿できます。
+このブログ記事もKobitoさんを使って書いています。
+あとはUML図がかけるようになれば最高だと思います。&lt;br&gt;
+ダウンロードは&lt;a href="http://kobito.qiita.com/" target="_blank"&gt;こちら&lt;/a&gt;&lt;br&gt;
+コマンドはこちら&lt;code&gt;brew cask install kobito&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img alt="kobito" src="/images/2015-07-22/05.png" /&gt;&lt;/p&gt;
+
+&lt;h2&gt;Locamatic&lt;/h2&gt;
+
+&lt;p&gt;学校にくるとプロキシの設定とか色々面倒ですよね。
+こちらのアプリで自動的にネットワークの設定をしてくれるので自分で切り替える必要もなく楽になります。
+詳しい設定の仕方は&lt;a href="https://github.com/dit-rohm/textbook/blob/master/common/proxy_on_mac.md"&gt;DITのテキスト&lt;/a&gt;にあるのでぜひ見てみてください。&lt;br&gt;
+ダウンロードは&lt;a href="http://www.45rpmsoftware.com/locamatic.php" target="_blank"&gt;こちら&lt;/a&gt;&lt;br&gt;
+こちらはcaskにはありませんでした。&lt;/p&gt;
+
+&lt;h2&gt;CheatSheet&lt;/h2&gt;
+
+&lt;p&gt;その名の通りチートシートです。
+コマンドキーを長押しするだけでいろんなアプリのショートカットキーの一覧を出してくれます。
+これからコマンドを覚えたい人用に、もしくはあーあのコマンドなんだっけとなる人用に。&lt;br&gt;
+ダウンロードは&lt;a href="http://www.mediaatelier.com/CheatSheet/" target="_blank"&gt;こちら&lt;/a&gt;&lt;br&gt;
+コマンドはこちら&lt;code&gt;brew cask install cheatsheet&lt;/code&gt;&lt;/p&gt;
+
+&lt;h2&gt;ClipMenu&lt;/h2&gt;
+
+&lt;p&gt;過去にコピーしたものでも履歴からまたコピーすることができます。
+前にコピーしたものをもう一度使いたいなんてときに便利です。&lt;br&gt;
+ダウンロードは&lt;a href="http://www.clipmenu.com/ja/" target="_blank"&gt;こちら&lt;/a&gt;&lt;br&gt;
+コマンドはこちら&lt;code&gt;brew cask install clipmenu&lt;/code&gt;&lt;/p&gt;
+
+&lt;h2&gt;Shupapan&lt;/h2&gt;
+
+&lt;p&gt;ファイルのリネームを一気にしてくれるアプリです。
+いろんな設定がすでにあるので自分のしたいリネームの設定も用意してくれてるはずです。
+コマンドでやるには少し不安な私にはありがたいです。&lt;br&gt;
+ダウンロードは&lt;a href="http://sunsky3s.s41.xrea.com/shupapan/" target="_blank"&gt;こちら&lt;/a&gt;&lt;br&gt;
+コマンドはこちら&lt;code&gt;brew cask install shupapan&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img alt="sp" src="/images/2015-07-22/09.png" /&gt;&lt;/p&gt;
+
+&lt;h2&gt;AppCleaner&lt;/h2&gt;
+
+&lt;p&gt;ここまで色々なアプリを紹介してきましたが、結局自分の好みなどもあると思うので、どんなもんかと入れてみたアプリを使わないなーと思ったらこのアプリでアンインストールしてください。
+アプリ厨なのでこの作業ですらアプリでやってしまいます。
+一瞬でできるのでとても楽です。&lt;br&gt;
+ダウンロードは&lt;a href="http://www.freemacsoft.net/appcleaner/" target="_blank"&gt;こちら&lt;/a&gt;&lt;br&gt;
+コマンドはこちら&lt;code&gt;brew cask install appcleaner&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img alt="ac" src="/images/2015-07-22/10.png" /&gt;&lt;/p&gt;
+
+&lt;hr&gt;
+
+&lt;p&gt;以上が私が使っているおすすめアプリの紹介となります。
+新しいアプリが見つかれば嬉しいです。
+気になったものがあればぜひ使ってみてください。&lt;/p&gt;
+</content>
+  </entry>
+</feed>
