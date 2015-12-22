@@ -83,10 +83,12 @@ GEM
       middleman-core (>= 3.2)
       net-sftp
       ptools
-    middleman-google-analytics (1.1.0)
-      middleman-core (~> 3.2)
-      uglifier (>= 2.1, < 3.0)
-    middleman-livereload (3.4.4)
+    middleman-google-analytics (2.0.1)
+      activesupport (~> 4.1)
+      erubis
+      middleman-core (>= 3.4)
+      uglifier (~> 2.6)
+    middleman-livereload (3.4.5)
       em-websocket (~> 0.5.1)
       middleman-core (>= 3.3)
       rack-livereload (~> 0.3.15)
@@ -100,8 +102,8 @@ GEM
       sprockets (~> 2.12.1)
       sprockets-helpers (~> 1.1.0)
       sprockets-sass (~> 1.3.0)
-    middleman-syntax (2.0.0)
-      middleman-core (~> 3.2)
+    middleman-syntax (2.1.0)
+      middleman-core (>= 3.2)
       rouge (~> 1.0)
     mime-types (3.0)
       mime-types-data (~> 3.2015)
@@ -112,7 +114,7 @@ GEM
     net-sftp (2.1.2)
       net-ssh (>= 2.6.5)
     net-ssh (3.0.1)
-    nokogiri (1.6.7)
+    nokogiri (1.6.7.1)
       mini_portile2 (~> 2.0.0.rc2)
     padrino-helpers (0.12.5)
       i18n (~> 0.6, >= 0.6.7)
@@ -159,9 +161,9 @@ PLATFORMS
 
 DEPENDENCIES
   builder
-  middleman
-  middleman-blog
-  middleman-deploy
+  middleman (~> 3.0)
+  middleman-blog (~> 3.0)
+  middleman-deploy (~> 1.0)
   middleman-google-analytics
   middleman-livereload
   middleman-minify-html
@@ -171,4 +173,4 @@ DEPENDENCIES
   redcarpet
 
 BUNDLED WITH
-   1.10.6
+   1.11.2
