@@ -1,0 +1,22 @@
+{
+  "name": "mentor-blog",
+  "version": "1.0.0",
+  "description": "DIT Mentor Blog",
+  "dependencies": {},
+  "devDependencies": {
+    "bower": "^1.7.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dit-rohm/mentor-blog.git"
+  },
+  "author": "DIT (dit.rohm@gmail.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dit-rohm/mentor-blog/issues"
+  },
+  "homepage": "https://github.com/dit-rohm/mentor-blog#readme"
+}
